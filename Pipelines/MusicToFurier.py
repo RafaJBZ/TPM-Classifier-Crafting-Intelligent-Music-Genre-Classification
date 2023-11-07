@@ -42,6 +42,6 @@ audio_data_df = binary_wave_rdd.map(lambda x: librosa.load(io.BytesIO(x[1]))[0])
 
 # Show the first few rows of the DataFrame
 audio_data_df.show()
-audio_data_df.write.mode('overwrite').parquet("hdfs://localhost:9000/data/tverde/fma_vectors/stft.parquet")
+audio_data_df.write.parquet("hdfs://localhost:9000/data/tverde/fma_vectors/stft.parquet")
 
 
