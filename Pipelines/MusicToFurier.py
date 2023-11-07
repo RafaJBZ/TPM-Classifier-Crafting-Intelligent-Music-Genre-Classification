@@ -22,7 +22,7 @@ spark = (
     .getOrCreate()
 )
 sc = pyspark.SparkContext.getOrCreate()
-binary_wave_rdd = sc.binaryFiles('./data/fma_small/*/' + '*.mp3')
+binary_wave_rdd = sc.binaryFiles('hdfs://localhost:9000/data/tverde/fma_medium/*/' + '*.mp3')
 fixed_length = 660984 # 30 seconds of audio at 22050 Hz
 
 x_length = 1025
@@ -42,6 +42,6 @@ audio_data_df = binary_wave_rdd.map(lambda x: librosa.load(io.BytesIO(x[1]))[0])
 
 # Show the first few rows of the DataFrame
 audio_data_df.show()
-audio_data_df.write.mode('overwrite').parquet("/mnt/c/Users/rafaj/Documents/Drive/ITESO/Seventh Semester-Otoño 2023/Proyecto de ingenieria de datos/Proyecto/Music-Pipeline/data/fma_vectors/stft.parquet")
+audio_data_df.write.mode('overwrite').parquet("hdfs://localhost:9000/data/tverde/fma_vectors/stft.parquet")
 
 
