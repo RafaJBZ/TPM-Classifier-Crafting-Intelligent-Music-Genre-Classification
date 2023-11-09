@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 import librosa
 import io
 import numpy as np
+import time
 
 spark_conf = {
     "spark.driver.cores": "1",
@@ -41,7 +42,6 @@ audio_data_df = binary_wave_rdd.map(lambda x: librosa.load(io.BytesIO(x[1]))[0])
     .toDF(ArrayType(FloatType())).withColumn("value", array_to_vector("value")) \
 
 # Show the first few rows of the DataFrame
-audio_data_df.show()
-audio_data_df.write.parquet("hdfs://localhost:9000/data/tverde/fma_vectors/stft.parquet")
+audio_data_df.write.parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors/{time.time}.parquet")
 
 
