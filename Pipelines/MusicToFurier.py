@@ -49,6 +49,7 @@ audio_data_df = (binary_wave_rdd \
                  .toDF(df_struct) \
                  .withColumn("vector", array_to_vector("vector"))
                  .withColumn("file_name", regexp_replace(regexp_extract("file_name", r'.*/(\d+\.mp3)$', 1), "\.mp3", ""))
+                 .withColumn("file_name", regexp_replace("file_name", "^0+", ""))
                  )
 
 # Show the first few rows of the DataFrame
