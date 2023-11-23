@@ -24,7 +24,7 @@ spark = (
     .getOrCreate()
 )
 sc = pyspark.SparkContext.getOrCreate()
-binary_wave_rdd = sc.binaryFiles('data/fma_small/000/' + '000002.mp3')
+binary_wave_rdd = sc.binaryFiles('hdfs://localhost:9000/data/tverde/fma_meduim/*' + '*.mp3')
 # Import metadata and features.
 tracks = pd.read_csv('data/fma_metadata/tracks.csv', index_col=0, header=[0, 1])
 
@@ -60,4 +60,4 @@ audio_data_df = (binary_wave_rdd \
                  )
 
 # Show the first few rows of the DataFrame
-audio_data_df.write.parquet(f"/home/rafajbz/data/fma_vectors/{time.time()}.parquet")
+audio_data_df.write.parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors/{time.time()}.parquet")
