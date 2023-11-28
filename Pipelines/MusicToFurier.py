@@ -60,4 +60,4 @@ audio_data_df = (binary_wave_rdd \
                  )
 
 # Show the first few rows of the DataFrame
-audio_data_df.write.parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors/{time.time()}.parquet")
+audio_data_df.write.parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors?{time.time()}.parquet")

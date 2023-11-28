@@ -163,4 +163,6 @@ cython_debug/
 # Data
 data/
 .idea
-.python-version
+.python-version!/model.h5
+/model.h5
+/.python-version
