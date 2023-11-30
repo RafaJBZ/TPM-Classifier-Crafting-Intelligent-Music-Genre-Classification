@@ -8,12 +8,16 @@ import numpy as np
 from pyspark.ml.functions import vector_to_array
 
 spark_conf = {
-    "spark.driver.cores": "1",
-    "spark.driver.memory": "1g",
+    "spark.driver.cores": "2",
+    "spark.driver.memory": "7g",
     "spark.executor.memory": "1g"
 }
 
-labels = ['Rock', 'Folk', 'Experimental', 'Pop', 'Hip-Hop', 'International']
+# labels = ['Rock', 'Folk', 'Experimental', 'Pop', 'Hip-Hop', 'International']
+
+labels = ["International", "Soul-RnB", "Instrumental", "Rock", "Jazz", "Folk", "Old-Time / Historic", "Blues",
+          "Experimental", "Pop", "Electronic", "Hip-Hop", "Classical", "Spoken", "Country", "Easy Listening"]
+
 class DatasetGenerator:
     def __init__(self, spark_df, buffer_size, x_col, y_col):
         window = Window().partitionBy(lit("a")).orderBy(lit("a"))
@@ -86,10 +90,10 @@ spark = (
 sc = spark.sparkContext
 
 sc.setLogLevel("ERROR")
-data = spark.read.parquet('/home/rafajbz/data/fma_vectors/1701049528.353486.parquet')
+data = spark.read.parquet('hdfs://localhost:9000/data/tverde/fma_vectors/1701184205.4851387.parquet')
 
-batch_size = 10
-buffer_size = 10 * 2
+batch_size = 64
+buffer_size = batch_size * 6
 
 data_generator = DatasetGenerator(data, buffer_size, x_col="vector", y_col="top_genere")
 
@@ -99,7 +103,7 @@ dataset = tf.data.Dataset \
 
 model = create_keras_model()
 
-model.fit(dataset, epochs=2)
+model.fit(dataset, epochs=5)
 
 model.save("./model.h5")
 
