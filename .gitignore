@@ -166,3 +166,4 @@ data/
 .python-version!/model.h5
 /model.h5
 /.python-version
+trained_models/
