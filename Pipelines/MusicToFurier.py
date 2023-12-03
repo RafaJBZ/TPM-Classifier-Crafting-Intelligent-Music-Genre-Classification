@@ -5,6 +5,7 @@ import pyspark
 from sklearn.preprocessing import StandardScaler
 import librosa
 import io
+import soundfile as sf
 import numpy as np
 import time
 from pyspark.sql.functions import regexp_extract, regexp_replace, udf
@@ -12,21 +13,21 @@ import pandas as pd
 
 spark_conf = {
     "spark.driver.cores": "1",
-    "spark.driver.memory": "7g",
+    "spark.driver.memory": "8g",
     "spark.executor.memory": "1g"
 }
 
 spark = (
     SparkSession.builder
-    .master("local[24]")
+    .master("local[*]")
     .appName("Word Count")
     .config(map=spark_conf)
     .getOrCreate()
 )
 sc = pyspark.SparkContext.getOrCreate()
-binary_wave_rdd = sc.binaryFiles('hdfs://localhost:9000/data/tverde/fma_meduim/*' + '*.mp3')
+binary_wave_rdd = sc.binaryFiles('hdfs://localhost:9000/data/tverde/fma_medium/*/' + '*.mp3')
 # Import metadata and features.
-tracks = pd.read_csv('data/fma_metadata/tracks.csv', index_col=0, header=[0, 1])
+tracks = pd.read_csv('./fma_metadata/tracks.csv', index_col=0, header=[0, 1])
 
 
 get_genre_udf = udf(lambda x: tracks.loc[int(x)]['track']['genre_top'], StringType())
@@ -41,9 +42,22 @@ sr = 22050
 df_struct = StructType([StructField("top_genere", StringType(), True),
                         StructField("vector", ArrayType(FloatType()), True)])
 
+timestamp = time.time()
+
+
+def load_from_bytes(x):
+    res = None
+    try:
+        res = librosa.load(io.BytesIO(x))[0]
+    except:
+        ...
+    return res
+
+
 # x[0] -> file name, x[1] bytes
 audio_data_df = (binary_wave_rdd \
-                 .map(lambda x: (x[0], librosa.load(io.BytesIO(x[1]))[0])) \
+                 .map(lambda x: (x[0], load_from_bytes(x[1]))) \
+                 .filter(lambda x: x[1] is not None) \
                  .map(lambda x: (x[0], librosa.util.fix_length(x[1], size=fixed_length))) \
                  .map(lambda x: (x[0], librosa.stft(x[1], n_fft=2048, hop_length=512))) \
                  .map(lambda x: (x[0], np.abs(x[1]))) \
@@ -60,4 +74,4 @@ audio_data_df = (binary_wave_rdd \
                  )
 
 # Show the first few rows of the DataFrame
-audio_data_df.write.parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors?{time.time()}.parquet")
+audio_data_df.write.mode("append").parquet(f"hdfs://localhost:9000/data/tverde/fma_vectors/{timestamp}.parquet")
