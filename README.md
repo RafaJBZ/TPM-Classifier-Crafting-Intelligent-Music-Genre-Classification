@@ -2,7 +2,7 @@
 
 ## Overview
 
-Welcome to the TPM (Text, Pipelines, and Models) Classifier project! This exciting endeavor focuses on constructing a robust music genre classification system utilizing the Free Music Archive (FMA) dataset and state-of-the-art machine-learning techniques. Our primary objectives involve crafting two efficient data pipelines and developing an intelligent model capable of accurately classifying music genres.
+Welcome to the TPM (Text, Pipelines, and Models) Classifier project! This exciting endeavor focuses on constructing a robust music genre classification system utilizing the Free Music Archive ([FMA](https://github.com/mdeff/fma)) dataset and state-of-the-art machine-learning techniques. Our primary objectives involve crafting two efficient data pipelines and developing an intelligent model capable of accurately classifying music genres.
 
 ## Project Goals
 
